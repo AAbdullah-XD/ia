@@ -1,0 +1,731 @@
+
+yo enjoy
+
+
+COAL Lab notes
+String reverse: 
+.model small 
+.stack 100h 
+.data 
+msg db 'Muntaha Nishat$' 
+.code 
+main proc 
+mov ax, @data 
+mov ds, ax 
+lea si, msg 
+mov cx, 14 
+l1: 
+mov bx,[si] 
+push bx 
+inc si 
+loop l1 
+mov cx, 14 
+l2: 
+pop dx 
+mov ah, 02h
+int 21h 
+loop l2 
+mov ah, 4ch 
+int 21h 
+main endp 
+end main 
+Output:
+
+Reversing an array from user: 
+.model small 
+.stack 100h 
+.data 
+msg db 10, 13,'Enter a string: $' arr db 7 dup(?) 
+msg1 db 10, 13,'Reversed string: $' .code 
+main proc 
+mov ax, @data 
+mov ds, ax 
+lea dx, msg 
+mov ah, 09h 
+int 21h
+lea si, arr 
+mov cx, 7 
+l1: 
+mov ah, 01h int 21h 
+mov [si], al inc si 
+loop l1 
+lea dx, msg1 mov ah, 09h int 21h 
+mov cx, 7 
+l2: 
+dec si 
+mov dl,[si] 
+mov ah, 02h int 21h 
+loop l2
+mov ah, 4ch 
+int 21h 
+main endp 
+end main 
+Output: 
+
+Stack Swap: 
+.model small 
+.stack 100h 
+.data 
+arr db 10 
+arr2 db 20 
+.code 
+main proc 
+mov ax, @data 
+mov ds, ax
+lea ax, arr 
+lea bx, arr2 
+push ax 
+push bx 
+pop bx 
+pop ax 
+mov ah, 4ch 
+int 21h 
+main endp 
+end main 
+Output:
+
+
+Binary to Hexadecimal: 
+.model small 
+.stack 100h 
+.data 
+msg db 10, 13, 'Enter a binary number (8 bits): $' binaryInput db 8 dup(?) 
+hexaMsg db 10, 13, 'Hexadecimal value: $' hexaOutput db 2 dup(?) 
+hexaDigits db '0123456789ABCDEF$' .code 
+main proc 
+mov ax, @data 
+mov ds, ax 
+lea dx, msg 
+mov ah, 09h 
+int 21h 
+lea si, binaryInput 
+mov cx, 8 
+l1: 
+mov ah, 01h 
+int 21h 
+mov [si], al
+inc si 
+loop l1 
+mov si, offset binaryInput mov bx, 0 
+mov cx, 8 
+l2: 
+mov al, [si] 
+sub al, '0' 
+shl bx, 1 
+or bl, al 
+inc si 
+loop l2 
+mov di, offset hexaOutput mov ah, 0 
+mov al, bl 
+shr al, 4 
+and al, 0Fh 
+add al, '0' 
+cmp al, '9' 
+jbe store_char 
+add al, 7 
+store_char: 
+mov [di], al
+inc di 
+mov al, bl 
+and al, 0Fh 
+add al, '0' 
+cmp al, '9' 
+jbe store_char2 
+add al, 7 
+store_char2: 
+mov [di], al 
+lea dx, hexaMsg mov ah, 09h 
+int 21h 
+lea dx, hexaOutput mov ah, 09h 
+int 21h 
+mov ah, 4Ch 
+int 21h 
+main endp 
+end main 
+Output:
+
+Hexadecimal to Binary: 
+.model small 
+.stack 100h 
+.data 
+msg db 10, 13, 'Enter a hexadecimal number (2 digits): $' 
+hexaInput db 2 dup(?) 
+binaryMsg db 10, 13, 'Binary value: $' 
+binaryOutput db 8 dup(?) 
+.code 
+main proc 
+mov ax, @data 
+mov ds, ax 
+lea dx, msg
+mov ah, 09h 
+int 21h 
+lea si, hexaInput 
+mov cx, 2 
+l1: 
+mov ah, 01h 
+int 21h 
+mov [si], al 
+inc si 
+loop l1 
+mov si, offset hexaInput mov di, offset binaryOutput mov cx, 2 
+convert_hex_to_binary: mov al, [si] 
+cmp al, '0' 
+jl invalid_input 
+cmp al, '9' 
+jle digit 
+sub al, 'A' - 10 
+jmp continue_conversion digit:
+sub al, '0' 
+continue_conversion: 
+mov ah, 0 
+mov bl, al 
+mov cl, 4 
+shift_nibble: 
+shl bl, 1 
+rcl ah, 1 
+loop shift_nibble 
+or [di], ah 
+shl ax, 8 
+inc si 
+dec cx 
+jnz convert_hex_to_binary 
+lea dx, binaryMsg 
+mov ah, 09h 
+int 21h 
+lea dx, binaryOutput 
+mov ah, 09h 
+int 21h 
+mov ah, 4Ch 
+int 21h 
+invalid_input:
+mov dx, offset errorMessage 
+mov ah, 09h 
+int 21h 
+mov ah, 4Ch 
+int 21h 
+main endp 
+errorMessage db 10, 13, 'Invalid hexadecimal input!$' 
+end main 
+Output: 
+Error: Infinite Loop
+To check if array is equal or not:
+include "emu8086.inc"
+.model small
+.stack 100h
+.data
+arr db 1,2,4,6,8
+arr1 db 1,2,4,6,8
+.code
+main proc
+  mov ax,@data
+  mov ds,ax
+  mov si,offset arr
+  mov di,offset arr1
+  mov cx,5
+  l1:
+  mov bl,[si]
+  mov al,[di]
+  cmp bl,al
+  jne not_equal
+  inc si
+  inc di
+  loop l1
+  print 'both arrays are equal'
+  mov ah,09h
+  int 21h
+  mov ah,4ch
+  int 21h
+  not_equal:
+  print 'both arrays are not equal'
+
+  mov ah,09h
+  int 21h
+  mov ah,4ch
+ int 21h
+main endp
+end main
+Output:
+
+To check if both arrays are equal or not entered by user:
+.model small
+.stack 100h
+.data
+msg1 db 10,13,"Enter First Array : $"
+arr1 db 10 dup('$')
+msg2 db 10,13,"Enter Second Array: $"
+arr2 db 10 dup('$')
+msg3 db 10,13,"Both Array are Equal : $"
+msg4 db 10,13,"Arrays are not equal : $"
+.code
+main proc
+  mov ax,@data
+  mov ds,ax
+
+  mov si,offset arr1
+  mov di,offset arr2
+  mov cx, 6
+  mov ah, 09h
+  lea dx, msg1
+  int 21h
+  inp_l1:
+  mov ah, 01h
+  int 21h
+  mov [si], al
+  inc si
+  loop inp_l1
+  mov cx, 6
+  mov ah, 09h
+  lea dx, msg2
+  int 21h
+  inp_l2:
+  mov ah, 01h
+  int 21h
+  mov [di], al
+  inc di
+  loop inp_l2
+  mov cx, 6
+  mov si, offset arr1
+  mov di, offset arr2
+  comp_loop:
+  mov ah, [si]
+  cmp ah, [di]
+  jne not_equal
+  inc si
+  inc di
+  loop comp_loop
+  mov ah, 09h
+  lea dx, msg3
+  int 21h
+  jmp end
+  not_equal:
+
+  mov ah, 09h
+  lea dx, msg4
+  int 21h
+  end:
+  main endp
+  end main
+  retn
+Output:
+
+To input array from user:
+.model small
+.stack 100h
+.data
+arr db 100 dup('$')
+.code
+main proc
+  mov ax,@data
+  mov ds, ax
+  mov si, offset arr 
+  l1:
+  mov ah,01h
+  int 21h
+
+  cmp al,13 
+  je end_program
+ 
+  mov [si], al
+  inc si
+  loop l1
+
+  end_program:
+  mov ah, 4ch
+  int 21h
+
+  main endp
+  end main
+Output:
+
+To print a message:
+.model small
+.stack 100h
+.data
+arr db 100 dup('$')
+msg db 10,13, "My message is $"
+.code
+main proc
+  mov ax,@data
+  mov ds, ax
+  mov si, offset arr
+
+  l1:
+  mov ah,01h
+  int 21h
+
+  cmp al,13 
+  je end_program
+
+ mov [si], al
+ inc si
+ loop l1
+
+  end_program:
+  lea dx, msg
+  mov ah, 09h
+  int 21h
+
+  lea dx,arr
+  mov ah, 09h
+  int 21h
+
+main endp
+end main
+Output:
+
+To check all flags:
+include "emu8086.inc"
+.model small
+.stack 100h
+
+.data
+Num1 dw 0FA62h
+Num2 db 94h
+.code
+main proc
+  mov ax, Num1
+  AND ax, 0FFDh
+  OR al, 20h
+  XOR Num1, 0FFDh
+  NOT Num2
+  XOR ax, ax
+  MOV ax, Num1
+  AND ax, 0008h
+  XOR ax, 0080h
+
+.exit end
+Output:
+
+Statement
+Destination content
+Status Flags
+Before
+After
+OF
+DF
+IF
+SF
+ZF
+AF
+PF
+CF
+mov ax, Num1
+0000
+20CD
+0
+0
+1
+0
+0
+0
+0
+0
+AND ax, 0FFDh
+20CD
+00CD
+0
+0
+1
+0
+0
+0
+0
+0
+OR al, 20h
+00CD
+00ED
+0
+0
+1
+1
+0
+0
+1
+0
+XOR
+Num1, 0FFDh
+00ED
+00ED
+0
+0
+1
+0
+0
+0
+1
+0
+NOT Num2
+00ED
+00ED
+0
+0
+1
+0
+0
+0
+1
+0
+XOR ax, ax
+00ED
+0000
+0
+0
+1
+0
+1
+0
+1
+0
+MOV ax, Num1
+0000
+2F30
+0
+0
+1
+0
+1
+0
+1
+0
+AND ax, 0008h
+2F30
+0000
+0
+0
+1
+0
+1
+0
+1
+0
+XOR ax, 0080h
+0000
+0080
+0
+0
+1
+0
+0
+0
+0
+0
+mov ax, Num1
+0080
+4C80
+0
+0
+1
+0
+0
+0
+0
+0
+AND ax, 0FFDh
+4C80
+4C00
+0
+0
+1
+0
+0
+0
+0
+0
+
+
+To check if numbers are equal from register:
+.model small 
+.stack 100h 
+.data 
+msg1 db 10,13, "Numbers are Equal! $" 
+msg2 db 10,13, "Numbers are not Equal! $" 
+.code 
+main proc 
+mov ax, @data 
+mov ds, ax 
+mov dl, '6' 
+mov ah, 01h 
+int 21h 
+cmp al, dl 
+je l1 
+lea dx, msg2 
+mov ah, 09h 
+int 21h 
+mov ah, 4ch
+int 21h 
+l1: 
+lea dx, msg1 
+mov ah, 09h 
+int 21h 
+mov ah, 4ch 
+int 21h 
+
+                           main endp 
+end main 
+Output:
+
+To check if numbers are equal from user:
+.model small
+.stack 100h
+.data
+msg3 db 10,13, "Enter the first Number: $"
+
+msg4 db 10,13, "Enter the second Number: $"
+msg1 db 10,13, "Numbers are Equal! $"
+msg2 db 10,13, "Numbers are not Equal! $"
+
+.code
+main proc
+mov ax, @data
+mov ds, ax
+
+lea dx, msg3
+mov ah, 09h
+int 21h
+
+mov ah, 01h
+int 21h
+
+mov bl, al
+
+lea dx, msg4
+mov ah, 09h
+int 21h
+
+mov ah, 01h
+int 21h
+
+mov cl, al
+
+cmp bl, cl
+
+je l1
+
+lea dx, msg2
+mov ah, 09h
+int 21h
+
+mov ah, 4ch
+int 21h
+
+l1:
+lea dx, msg1
+mov ah, 09h
+int 21h
+
+mov ah, 4ch
+int 21h
+
+main endp
+end main
+Output:
+
+
+
+Check if number is greater, less or equal:
+.model small
+.stack 100h
+.data
+msg3 db 10,13, "Enter the first Number: $"
+msg4 db 10,13, "Enter the second Number: $"
+msg1 db 10,13, "Numbers are Equal! $"
+msg5 db 10,13, "First number is greater $"
+msg6 db 10,13, "Second number is greater $"
+
+.code
+main proc
+mov ax, @data
+mov ds, ax
+
+lea dx, msg3
+mov ah, 09h
+
+int 21h
+
+mov ah, 01h
+int 21h
+
+mov bl, al
+
+lea dx, msg4
+mov ah, 09h
+int 21h
+
+mov ah, 01h
+int 21h
+
+mov cl, al
+
+cmp bl, cl
+
+je l1
+
+jg l2
+
+lea dx, msg6
+mov ah, 09h
+int 21h
+
+mov ah, 4ch
+
+int 21h
+
+l1:
+lea dx, msg1
+mov ah, 09h
+int 21h
+
+mov ah, 4ch
+int 21h
+
+l2:
+lea dx, msg5
+mov ah, 09h
+int 21h
+
+mov ah, 4ch
+int 21h
+
+main endp
+end main
+Output:
+
+
+ 
+Printing alphabets:
+.model small
+.stack 100h
+.data
+
+msg1 db 10,13, "Alphabets from A to Z are: $"
+
+.code
+main proc
+mov ax, @data
+mov ds, ax
+
+lea dx, msg1
+mov ah, 09h
+int 21h
+
+mov cx, 26
+
+mov dx, 65
+
+l1:
+
+mov ah, 02h
+int 21h
+
+inc dl
+dec cx
+
+jnz l1
+
+mov ah, 4ch
+int 21h
+
+main endp
+end main
+Output:
+
